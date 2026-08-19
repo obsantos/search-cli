@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "search-cli"
+version = "0.1.0"
+description = "A powerful CLI for querying Google Search Console Search Analytics API"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Search CLI Contributors" }
+]
+dependencies = [
+    "google-api-python-client>=2.100.0",
+    "google-auth>=2.25.0",
+    "google-auth-oauthlib>=1.2.0",
+    "google-auth-httplib2>=0.2.0",
+    "typer[all]>=0.12.0",
+    "rich>=13.7.0",
+    "python-dateutil>=2.8.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+search-cli = "search_cli.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["search_cli*"]
