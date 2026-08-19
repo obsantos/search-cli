@@ -40,3 +40,19 @@ def test_cli_query_missing_site(tmp_path, monkeypatch):
     result = runner.invoke(app, ["query"])
     assert result.exit_code == 1
     assert "No site URL specified" in result.stderr or "No site URL specified" in result.stdout
+
+
+def test_cli_guide():
+    result = runner.invoke(app, ["guide"])
+    assert result.exit_code == 0
+    assert "Search CLI - AI Agent & User Guide" in result.stdout
+
+
+def test_cli_guide_json():
+    import json
+    result = runner.invoke(app, ["guide", "--json"])
+    assert result.exit_code == 0
+    data = json.loads(result.stdout)
+    assert data["title"] == "SearchCLI_Agent_Specification"
+    assert "query" in data["commands"]
+
