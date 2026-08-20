@@ -186,7 +186,12 @@ pytest
 
 ---
 
-## Privacy & Security
+## Privacy & Legal
 
-`search-cli` runs entirely on your local machine. All Google Search Console analytics data and OAuth tokens are stored locally and are never transmitted to any third-party server. For details, see our [Privacy Policy](PRIVACY_POLICY.md).
+`search-cli` runs entirely on your local machine. All Google Search Console analytics data and OAuth tokens are stored locally and are never transmitted to any third-party server.
+
+* [Privacy Policy](PRIVACY_POLICY.md)
+* [Terms of Service](TERMS_OF_SERVICE.md)
+* [MIT License](LICENSE)
+
 
