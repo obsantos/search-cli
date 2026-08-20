@@ -42,11 +42,16 @@ pip install -e .
 
 `search-cli` uses Google's official **Loopback IP Redirect Flow**. When you run the login command, your browser opens automatically, and once you approve access, Google sends the token directly back to your CLI on localhost (no manual code copying needed).
 
-#### Setup Google Cloud Project:
-1. Open the [Google Cloud Console](https://console.cloud.google.com/).
-2. Enable the **Google Search Console API**.
-3. Under **Google Auth Platform ➔ Audience**, set User type to **External** and publishing status to **In production** (allows up to 100 users without full review).
-4. Under **Clients / Credentials**, click **Create Credentials ➔ OAuth client ID** and select **Desktop App**.
+#### 1. Setup Google Cloud Project:
+1. Open the [Google Cloud Console](https://console.cloud.google.com/) and select or create a project.
+2. **Enable the Google Search Console API:**  
+   Navigate to the [Google Search Console API Library](https://console.cloud.google.com/apis/library/searchconsole.googleapis.com) and click **"ENABLE"**.  
+   *(⚠️ Required: If not enabled, Google will return a 403 `accessNotConfigured` error).*
+3. **Configure OAuth Consent Screen:**  
+   Under **Google Auth Platform ➔ Audience**, set User type to **External** and publishing status to **In production** (allows up to 100 users without full review).
+4. **Create Credentials:**  
+   Under **Clients / Credentials**, click **Create Credentials ➔ OAuth client ID** and select Application type: **Desktop App**.
+
 
 #### Login Methods:
 
@@ -81,14 +86,16 @@ pip install -e .
 
 For automated pipelines, background jobs, or AI tool callers where no browser interaction is possible:
 
-1. In Google Cloud Console, go to **IAM & Admin ➔ Service Accounts** and create a service account.
-2. Generate and download a **JSON key**.
-3. In [Google Search Console](https://search.google.com/search-console) ➔ **Settings ➔ Users and permissions**, add your service account email (e.g. `service-account@project.iam.gserviceaccount.com`) with **Full** or **Restricted** permissions.
-4. Configure `search-cli`:
+1. In Google Cloud Console, ensure the **[Google Search Console API](https://console.cloud.google.com/apis/library/searchconsole.googleapis.com)** is enabled on your project.
+2. Go to **IAM & Admin ➔ Service Accounts** and create a service account.
+3. Generate and download a **JSON key**.
+4. In [Google Search Console](https://search.google.com/search-console) ➔ **Settings ➔ Users and permissions**, add your service account email (e.g. `service-account@project.iam.gserviceaccount.com`) with **Full** or **Restricted** permissions.
+5. Configure `search-cli`:
    ```bash
    search-cli auth service-account --key /path/to/service_account.json
    ```
    *(Alternatively, set `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account.json`).*
+
 
 
 ---
