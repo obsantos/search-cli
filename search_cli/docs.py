@@ -181,6 +181,8 @@ CLI_AGENT_SCHEMA: Dict[str, Any] = {
             "description": "Interactive OAuth 2.0 login flow in web browser.",
             "options": {
                 "--credentials": {"type": "string", "short": "-c", "description": "Path to client_secrets.json"},
+                "--client-id": {"type": "string", "description": "OAuth Client ID string"},
+                "--client-secret": {"type": "string", "description": "OAuth Client Secret string"},
                 "--port": {"type": "integer", "short": "-p", "default": 0},
                 "--no-browser": {"type": "boolean", "default": False},
             },

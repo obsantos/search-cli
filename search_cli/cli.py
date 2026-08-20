@@ -172,6 +172,16 @@ def auth_login(
         file_okay=True,
         dir_okay=False,
     ),
+    client_id: Optional[str] = typer.Option(
+        None,
+        "--client-id",
+        help="Google OAuth Client ID string (alternative to passing client_secrets.json).",
+    ),
+    client_secret: Optional[str] = typer.Option(
+        None,
+        "--client-secret",
+        help="Google OAuth Client Secret string.",
+    ),
     port: int = typer.Option(
         0,
         "--port",
@@ -184,11 +194,13 @@ def auth_login(
         help="Do not automatically launch browser; prints authorization URL.",
     ),
 ):
-    """Authenticate via OAuth 2.0 Authorization Code flow."""
+    """Authenticate via OAuth 2.0 Authorization Code flow in your browser."""
     try:
         console.print("[cyan]Starting Google OAuth 2.0 authorization flow...[/cyan]")
         login_oauth(
             client_secrets_path=credentials,
+            client_id=client_id,
+            client_secret=client_secret,
             port=port,
             open_browser=not no_browser,
         )
@@ -196,6 +208,7 @@ def auth_login(
     except Exception as e:
         err_console.print(f"[bold red]Authentication failed:[/bold red] {e}")
         raise typer.Exit(1)
+
 
 
 @auth_app.command("service-account")

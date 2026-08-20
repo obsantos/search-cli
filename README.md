@@ -36,28 +36,58 @@ pip install -e .
 
 ## Authentication Setup
 
-### Option 1: OAuth 2.0 (Recommended for Personal / CLI Use)
+`search-cli` supports two primary authentication modes: **OAuth 2.0 Browser Login** (for interactive/personal use) and **Service Account Keys** (for headless automation, servers, and CI/CD).
 
+### Option 1: OAuth 2.0 Browser Login (Interactive)
+
+`search-cli` uses Google's official **Loopback IP Redirect Flow**. When you run the login command, your browser opens automatically, and once you approve access, Google sends the token directly back to your CLI on localhost (no manual code copying needed).
+
+#### Setup Google Cloud Project:
 1. Open the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a new project or select an existing one.
-3. Enable the **Google Search Console API** (Search Console API).
-4. Go to **APIs & Services > Credentials** and create an **OAuth 2.0 Client ID** (Application type: *Desktop App*).
-5. Download the JSON credentials file (`client_secrets.json`).
-6. Run:
-   ```bash
-   search-cli auth login --credentials /path/to/client_secrets.json
-   ```
-   A browser window will open asking you to grant read access to your Search Console properties.
+2. Enable the **Google Search Console API**.
+3. Under **Google Auth Platform ➔ Audience**, set User type to **External** and publishing status to **In production** (allows up to 100 users without full review).
+4. Under **Clients / Credentials**, click **Create Credentials ➔ OAuth client ID** and select **Desktop App**.
 
-### Option 2: Service Account (Recommended for Headless / CI/CD)
+#### Login Methods:
 
-1. In Google Cloud Console, create a **Service Account** and generate a JSON key.
-2. Go to [Google Search Console](https://search.google.com/search-console) > Settings > Users and permissions.
-3. Add the service account email (e.g. `service-account@project.iam.gserviceaccount.com`) as a user with **Full** or **Restricted** permissions on your property.
-4. Run:
+* **Method A: Using downloaded `client_secrets.json` (Recommended)**
+  ```bash
+  search-cli auth login --credentials /path/to/client_secrets.json
+  ```
+  *(Or place the file at `~/.config/search-cli/client_secrets.json` and just run `search-cli auth login`).*
+
+* **Method B: Using Client ID & Client Secret strings**
+  ```bash
+  search-cli auth login \
+    --client-id "YOUR_CLIENT_ID.apps.googleusercontent.com" \
+    --client-secret "YOUR_CLIENT_SECRET"
+  ```
+
+* **Method C: Using Environment Variables**
+  ```bash
+  export SEARCH_CLI_CLIENT_ID="YOUR_CLIENT_ID.apps.googleusercontent.com"
+  export SEARCH_CLI_CLIENT_SECRET="YOUR_CLIENT_SECRET"
+  search-cli auth login
+  ```
+
+> [!NOTE]
+> **One-Time Consent Screen:** Because Search Console is a sensitive scope, when logging into an unverified app for the first time, Google will display *"Google hasn't verified this app"*. Simply click **Advanced ➔ Go to Search CLI (unsafe)**. Tokens are saved locally to `~/.config/search-cli/token.json` and refresh automatically.
+
+---
+
+### Option 2: Service Account Key (Headless / AI Agent Automation)
+
+For automated pipelines, background jobs, or AI tool callers where no browser interaction is possible:
+
+1. In Google Cloud Console, go to **IAM & Admin ➔ Service Accounts** and create a service account.
+2. Generate and download a **JSON key**.
+3. In [Google Search Console](https://search.google.com/search-console) ➔ **Settings ➔ Users and permissions**, add your service account email (e.g. `service-account@project.iam.gserviceaccount.com`) with **Full** or **Restricted** permissions.
+4. Configure `search-cli`:
    ```bash
    search-cli auth service-account --key /path/to/service_account.json
    ```
+   *(Alternatively, set `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account.json`).*
+
 
 ---
 

@@ -37,39 +37,62 @@ def get_stored_credentials_path() -> Path:
 
 def login_oauth(
     client_secrets_path: Optional[Path] = None,
+    client_id: Optional[str] = None,
+    client_secret: Optional[str] = None,
     port: int = 0,
     open_browser: bool = True,
 ) -> OAuthCredentials:
     """Run OAuth 2.0 Authorization Code flow and save credentials."""
-    secrets_file: Optional[Path] = None
+    # 1. Direct Client ID & Client Secret
+    c_id = client_id or os.environ.get("SEARCH_CLI_CLIENT_ID") or get_config_value("client_id")
+    c_secret = client_secret or os.environ.get("SEARCH_CLI_CLIENT_SECRET") or get_config_value("client_secret")
 
-    if client_secrets_path and Path(client_secrets_path).exists():
-        secrets_file = Path(client_secrets_path)
-    elif os.environ.get("SEARCH_CLI_CLIENT_SECRETS"):
-        env_path = Path(os.environ["SEARCH_CLI_CLIENT_SECRETS"])
-        if env_path.exists():
-            secrets_file = env_path
-    elif get_config_value("client_secrets_path"):
-        cfg_path = Path(get_config_value("client_secrets_path"))
-        if cfg_path.exists():
-            secrets_file = cfg_path
-    elif get_stored_credentials_path().exists():
-        secrets_file = get_stored_credentials_path()
+    if c_id and c_secret:
+        client_config = {
+            "installed": {
+                "client_id": c_id,
+                "client_secret": c_secret,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "redirect_uris": ["http://localhost"],
+            }
+        }
+        flow = InstalledAppFlow.from_client_config(client_config, scopes=SCOPES)
+        set_config_value("client_id", c_id)
+        set_config_value("client_secret", c_secret)
+    else:
+        # 2. File-based credentials
+        secrets_file: Optional[Path] = None
 
-    if not secrets_file or not secrets_file.exists():
-        raise AuthError(
-            "OAuth client secrets file not found!\n"
-            "Please provide it via:\n"
-            "  1. search-cli auth login --credentials /path/to/client_secrets.json\n"
-            f"  2. Place it at: {get_stored_credentials_path()}\n"
-            "  3. Set SEARCH_CLI_CLIENT_SECRETS environment variable"
+        if client_secrets_path and Path(client_secrets_path).exists():
+            secrets_file = Path(client_secrets_path)
+        elif os.environ.get("SEARCH_CLI_CLIENT_SECRETS"):
+            env_path = Path(os.environ["SEARCH_CLI_CLIENT_SECRETS"])
+            if env_path.exists():
+                secrets_file = env_path
+        elif get_config_value("client_secrets_path"):
+            cfg_path = Path(get_config_value("client_secrets_path"))
+            if cfg_path.exists():
+                secrets_file = cfg_path
+        elif get_stored_credentials_path().exists():
+            secrets_file = get_stored_credentials_path()
+
+        if not secrets_file or not secrets_file.exists():
+            raise AuthError(
+                "OAuth credentials not found!\n"
+                "Please authenticate using one of the following methods:\n"
+                "  1. Pass client secrets file:  search-cli auth login --credentials /path/to/client_secrets.json\n"
+                "  2. Pass Client ID & Secret:   search-cli auth login --client-id <ID> --client-secret <SECRET>\n"
+                f"  3. Place credentials file at: {get_stored_credentials_path()}\n"
+                "  4. Set environment variables: SEARCH_CLI_CLIENT_ID and SEARCH_CLI_CLIENT_SECRET (or SEARCH_CLI_CLIENT_SECRETS)"
+            )
+
+        flow = InstalledAppFlow.from_client_secrets_file(
+            str(secrets_file),
+            scopes=SCOPES,
         )
+        set_config_value("client_secrets_path", str(secrets_file.resolve()))
 
-    flow = InstalledAppFlow.from_client_secrets_file(
-        str(secrets_file),
-        scopes=SCOPES,
-    )
-    
     creds = flow.run_local_server(
         port=port,
         open_browser=open_browser,
@@ -83,9 +106,9 @@ def login_oauth(
 
     # Update config
     set_config_value("auth_type", "oauth")
-    set_config_value("client_secrets_path", str(secrets_file.resolve()))
 
     return creds
+
 
 
 def set_service_account(service_account_path: Path) -> ServiceAccountCredentials:
