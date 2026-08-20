@@ -183,3 +183,10 @@ Run tests with pytest:
 ```bash
 pytest
 ```
+
+---
+
+## Privacy & Security
+
+`search-cli` runs entirely on your local machine. All Google Search Console analytics data and OAuth tokens are stored locally and are never transmitted to any third-party server. For details, see our [Privacy Policy](PRIVACY_POLICY.md).
+
