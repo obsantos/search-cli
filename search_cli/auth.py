@@ -30,6 +30,11 @@ class AuthError(Exception):
     pass
 
 
+# Built-in Default Client Credentials for search-cli
+DEFAULT_CLIENT_ID = "1058307846464-rpt8la2rnn7n1h2dcilceuhckuis7qu7.apps.googleusercontent.com"
+DEFAULT_CLIENT_SECRET = ""
+
+
 def get_stored_credentials_path() -> Path:
     """Return default path for stored client secrets."""
     return get_config_dir() / "client_secrets.json"
@@ -44,8 +49,18 @@ def login_oauth(
 ) -> OAuthCredentials:
     """Run OAuth 2.0 Authorization Code flow and save credentials."""
     # 1. Direct Client ID & Client Secret
-    c_id = client_id or os.environ.get("SEARCH_CLI_CLIENT_ID") or get_config_value("client_id")
-    c_secret = client_secret or os.environ.get("SEARCH_CLI_CLIENT_SECRET") or get_config_value("client_secret")
+    c_id = (
+        client_id
+        or os.environ.get("SEARCH_CLI_CLIENT_ID")
+        or get_config_value("client_id")
+        or DEFAULT_CLIENT_ID
+    )
+    c_secret = (
+        client_secret
+        or os.environ.get("SEARCH_CLI_CLIENT_SECRET")
+        or get_config_value("client_secret")
+        or DEFAULT_CLIENT_SECRET
+    )
 
     if c_id and c_secret:
         client_config = {
@@ -62,6 +77,7 @@ def login_oauth(
         set_config_value("client_secret", c_secret)
     else:
         # 2. File-based credentials
+
         secrets_file: Optional[Path] = None
 
         if client_secrets_path and Path(client_secrets_path).exists():
@@ -81,11 +97,13 @@ def login_oauth(
             raise AuthError(
                 "OAuth credentials not found!\n"
                 "Please authenticate using one of the following methods:\n"
-                "  1. Pass client secrets file:  search-cli auth login --credentials /path/to/client_secrets.json\n"
-                "  2. Pass Client ID & Secret:   search-cli auth login --client-id <ID> --client-secret <SECRET>\n"
-                f"  3. Place credentials file at: {get_stored_credentials_path()}\n"
-                "  4. Set environment variables: SEARCH_CLI_CLIENT_ID and SEARCH_CLI_CLIENT_SECRET (or SEARCH_CLI_CLIENT_SECRETS)"
+                "  1. Pass client secrets file:     search-cli auth login --credentials /path/to/client_secrets.json\n"
+                "  2. Pass Client Secret (default Client ID is built-in): search-cli auth login --client-secret <SECRET>\n"
+                "  3. Pass custom Client ID & Secret: search-cli auth login --client-id <ID> --client-secret <SECRET>\n"
+                f"  4. Place credentials file at:    {get_stored_credentials_path()}\n"
+                "  5. Set environment variable:     SEARCH_CLI_CLIENT_SECRET or SEARCH_CLI_CLIENT_SECRETS"
             )
+
 
         flow = InstalledAppFlow.from_client_secrets_file(
             str(secrets_file),
