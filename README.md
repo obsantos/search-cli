@@ -56,27 +56,23 @@ pip install -e .
   ```
   *(Or place the file at `~/.config/search-cli/client_secrets.json` and just run `search-cli auth login`).*
 
-* **Method B: Using Client Secret (with built-in default Client ID)**
-  `search-cli` comes with a built-in pre-configured Desktop Client ID (`1058307846464-rpt8la2rnn7n1h2dcilceuhckuis7qu7.apps.googleusercontent.com`):
-  ```bash
-  search-cli auth login --client-secret "YOUR_CLIENT_SECRET"
-  ```
-
-* **Method C: Using custom Client ID & Client Secret strings**
+* **Method B: Using Client ID & Client Secret strings**
   ```bash
   search-cli auth login \
     --client-id "YOUR_CLIENT_ID.apps.googleusercontent.com" \
     --client-secret "YOUR_CLIENT_SECRET"
   ```
 
-* **Method D: Using Environment Variables**
+* **Method C: Using Environment Variables**
   ```bash
+  export SEARCH_CLI_CLIENT_ID="YOUR_CLIENT_ID.apps.googleusercontent.com"
   export SEARCH_CLI_CLIENT_SECRET="YOUR_CLIENT_SECRET"
   search-cli auth login
   ```
 
 > [!NOTE]
 > **One-Time Consent Screen:** Because Search Console is a sensitive scope, when logging into an unverified app for the first time, Google will display *"Google hasn't verified this app"*. Simply click **Advanced ➔ Go to Search CLI (unsafe)**. Tokens are saved locally to `~/.config/search-cli/token.json` and refresh automatically.
+
 
 
 ---
