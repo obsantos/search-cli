@@ -7,6 +7,29 @@ from googleapiclient.errors import HttpError
 from search_cli.auth import get_credentials
 
 
+import json
+
+
+def _format_api_error(error: HttpError, context: str = "") -> str:
+    """Format Google API HttpError into a clean, actionable message."""
+    try:
+        data = json.loads(error.content.decode("utf-8"))
+        err_obj = data.get("error", {})
+        msg = err_obj.get("message", str(error))
+        
+        # Check if API is disabled
+        if "has not been used in project" in msg or "is disabled" in msg:
+            return (
+                f"Google Search Console API is disabled in your Google Cloud Project.\n"
+                f"👉 Enable it by clicking this link:\n   {msg.split('by visiting ')[-1].split(' then retry')[0]}"
+            )
+        
+        prefix = f"{context}: " if context else ""
+        return f"{prefix}{msg}"
+    except Exception:
+        return f"{context}: {error}" if context else str(error)
+
+
 class SearchConsoleClient:
     """Client for Google Search Console Search Analytics API."""
 
@@ -27,7 +50,8 @@ class SearchConsoleClient:
             response = self.service.sites().list().execute()
             return response.get("siteEntry", [])
         except HttpError as e:
-            raise RuntimeError(f"Failed to list sites: {e}")
+            raise RuntimeError(_format_api_error(e, "Failed to list sites"))
+
 
     def query_search_analytics(
         self,
@@ -67,7 +91,7 @@ class SearchConsoleClient:
             )
             return response
         except HttpError as e:
-            raise RuntimeError(f"Search Console API error for '{site_url}': {e}")
+            raise RuntimeError(_format_api_error(e, f"Search Console error for '{site_url}'"))
 
     def list_sitemaps(self, site_url: str) -> List[Dict[str, Any]]:
         """List all sitemaps submitted for the site."""
@@ -75,7 +99,7 @@ class SearchConsoleClient:
             response = self.service.sitemaps().list(siteUrl=site_url).execute()
             return response.get("sitemap", [])
         except HttpError as e:
-            raise RuntimeError(f"Failed to list sitemaps: {e}")
+            raise RuntimeError(_format_api_error(e, f"Failed to list sitemaps for '{site_url}'"))
 
     def inspect_url(self, site_url: str, inspection_url: str) -> Dict[str, Any]:
         """Inspect a URL using the Search Console URL Inspection API."""
@@ -87,4 +111,5 @@ class SearchConsoleClient:
             response = self.service.urlInspection().index().inspect(body=body).execute()
             return response.get("inspectionResult", {})
         except HttpError as e:
-            raise RuntimeError(f"URL Inspection API error: {e}")
+            raise RuntimeError(_format_api_error(e, f"URL Inspection error for '{inspection_url}'"))
+
