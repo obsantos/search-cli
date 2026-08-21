@@ -253,13 +253,16 @@ codex mcp add search-console -- search-cli mcp
 ```
 
 #### 🟣 Claude Code CLI
+Add globally across all projects (Recommended):
 ```bash
-# Add to current project:
-claude mcp add search-console -- search-cli mcp
-
-# Or add globally across all projects:
 claude mcp add search-console --scope user -- search-cli mcp
 ```
+
+Or add to current project only:
+```bash
+claude mcp add search-console -- search-cli mcp
+```
+
 
 #### 🦢 Goose CLI
 ```bash
