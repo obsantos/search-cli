@@ -87,6 +87,13 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 
+def mcp_callback(value: bool):
+    if value:
+        from search_cli.mcp_server import run_mcp_server
+        run_mcp_server(transport="stdio")
+        raise typer.Exit()
+
+
 @app.callback()
 def main(
     version: Optional[bool] = typer.Option(
@@ -97,9 +104,50 @@ def main(
         callback=version_callback,
         is_eager=True,
     ),
+    mcp: Optional[bool] = typer.Option(
+        None,
+        "--mcp",
+        help="Launch the Model Context Protocol (MCP) server over stdio.",
+        callback=mcp_callback,
+        is_eager=True,
+    ),
 ):
-    """search-cli: Fast, AI-agent friendly Google Search Console CLI."""
+    """search-cli: Fast, AI-agent friendly Google Search Console CLI and MCP Server."""
     pass
+
+
+# ==============================================================================
+# Model Context Protocol (MCP) Server Command
+# ==============================================================================
+
+@app.command("mcp")
+def mcp_command(
+    transport: str = typer.Option(
+        "stdio",
+        "--transport",
+        "-t",
+        help="MCP transport protocol: 'stdio' (for Claude Desktop, Cursor, Antigravity) or 'sse' / 'streamable-http' (for HTTP network servers).",
+    ),
+    host: str = typer.Option(
+        "127.0.0.1",
+        "--host",
+        "-h",
+        help="Host to bind for SSE / HTTP transport.",
+    ),
+    port: int = typer.Option(
+        8000,
+        "--port",
+        "-p",
+        help="Port to bind for SSE / HTTP transport.",
+    ),
+):
+    """Start the Model Context Protocol (MCP) server for AI assistants (Claude, Cursor, Antigravity)."""
+    from search_cli.mcp_server import run_mcp_server
+    try:
+        run_mcp_server(transport=transport, host=host, port=port)
+    except Exception as e:
+        err_console.print(f"[bold red]MCP Server error:[/bold red] {e}")
+        raise typer.Exit(1)
 
 
 # ==============================================================================
@@ -121,6 +169,7 @@ def guide_command(
         return
 
     guide_md = f"""
+
 # Search CLI - AI Agent & User Guide (v{__version__})
 
 `search-cli` provides direct access to Google Search Console Search Analytics API.

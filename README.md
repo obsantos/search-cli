@@ -11,8 +11,9 @@ A modern, fast command-line interface for querying the **Google Search Console S
 - 🔐 **Dual Auth Support**:
   - **OAuth 2.0 User Flow**: Web browser login for personal/interactive usage with automatic token refresh.
   - **Service Account**: Headless authentication for automated scripts and CI/CD pipelines.
-- 📊 **Multiple Output Formats**: Rich formatted terminal tables, CSV, TSV, and JSON.
+- 🤖 **Model Context Protocol (MCP) Server**: Built-in official MCP server (`search-cli mcp`) for Claude Desktop, Cursor, Antigravity, and AI agents.
 - 🌐 **Property & Sitemap Management**: List verified sites, set a default property, check sitemaps status, and inspect URLs.
+
 
 ---
 
@@ -200,6 +201,58 @@ search-cli sitemaps list
 
 ---
 
+## Model Context Protocol (MCP) Server
+
+`search-cli` includes a built-in **MCP Server** using the official Model Context Protocol standard (`mcp>=2.0.0`), allowing AI assistants (Claude Desktop, Cursor, Antigravity, VS Code, Zed) to natively query your Google Search Console data.
+
+### 1. Exposed MCP Tools
+* `query_search_analytics`: Query clicks, impressions, CTR, average position with dimension breakdown, filters, date ranges, and sorting.
+* `list_properties`: List all verified Google Search Console properties and permission levels.
+* `inspect_url`: Inspect index coverage state, verdict, robots.txt, and canonical URLs.
+* `list_sitemaps`: List submitted sitemaps, last download timestamps, and error/warning counts.
+* `get_authentication_status`: Check current authentication status and account details.
+
+### 2. Configure with Claude Desktop
+
+Add `search-cli` to your `claude_desktop_config.json` (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "search-console": {
+      "command": "search-cli",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+### 3. Configure with Cursor / Antigravity / Other AI IDEs
+
+In your MCP settings (or `.cursor/mcp.json` / `settings.json`):
+
+```json
+{
+  "mcpServers": {
+    "search-console": {
+      "command": "search-cli",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+### 4. Run Standalone Server
+```bash
+# Standard I/O mode (default for IDEs and Claude Desktop):
+search-cli mcp
+
+# Network SSE mode (for remote HTTP agents):
+search-cli mcp --transport sse --host 127.0.0.1 --port 8000
+```
+
+---
+
 ## Configuration
 
 You can view and set configuration defaults at any time:
@@ -213,6 +266,7 @@ search-cli config set default_site "sc-domain:example.com"
 # Clear credentials
 search-cli auth logout
 ```
+
 
 ---
 
