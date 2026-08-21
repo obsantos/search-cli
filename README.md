@@ -40,16 +40,27 @@
 ### Prerequisites
 - Python 3.9+
 
-### Setup
+### Quick Install (Automated)
+Clone the repository and run the setup script (automatically creates virtualenv, installs dependencies, and links `search-cli` to `~/.local/bin`):
 ```bash
-# Clone or navigate to the directory
-cd /path/to/search-cli
+git clone https://github.com/obsantos/search-cli.git
+cd search-cli
+./install.sh
+```
 
-# Create a virtual environment & install in editable mode
+### Manual Install
+```bash
+# 1. Create a virtual environment & install in editable mode
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
+
+# 2. Make search-cli available globally across all terminal tabs
+mkdir -p ~/.local/bin
+ln -sf $(pwd)/.venv/bin/search-cli ~/.local/bin/search-cli
 ```
+*(Ensure `~/.local/bin` is in your `$PATH`)*.
+
 
 ---
 
