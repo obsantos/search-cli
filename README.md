@@ -247,6 +247,24 @@ In the interactive CLI prompt:
 
 ### 3. Add via Configuration Files
 
+#### Standard MCP Format (Claude Desktop, Cursor, Windsurf, Antigravity, VS Code, Zed)
+Paste into your client's configuration file:
+* **Claude Desktop:** `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) / `%APPDATA%\Claude\claude_desktop_config.json` (Windows)
+* **Cursor:** `.cursor/mcp.json` (or *Settings ➔ Features ➔ MCP*)
+* **Windsurf:** `~/.codeium/windsurf/mcp_config.json`
+* **Antigravity / VS Code:** `.vscode/settings.json` or user `settings.json`
+
+```json
+{
+  "mcpServers": {
+    "search-console": {
+      "command": "search-cli",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
 #### 🤖 Codex (`~/.codex/config.json` or `.codex/config.json`)
 ```json
 {
@@ -261,56 +279,6 @@ In the interactive CLI prompt:
 }
 ```
 
-#### 🟣 Claude Desktop (`claude_desktop_config.json`)
-* **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-* **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-
-```json
-{
-  "mcpServers": {
-    "search-console": {
-      "command": "search-cli",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
-#### ⚡ Cursor (`.cursor/mcp.json` or Settings ➔ Features ➔ MCP)
-```json
-{
-  "mcpServers": {
-    "search-console": {
-      "command": "search-cli",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
-#### 🌊 Windsurf / Cascade (`~/.codeium/windsurf/mcp_config.json`)
-```json
-{
-  "mcpServers": {
-    "search-console": {
-      "command": "search-cli",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
-#### 🌌 Antigravity / Gemini CLI / VS Code
-```json
-{
-  "mcpServers": {
-    "search-console": {
-      "command": "search-cli",
-      "args": ["mcp"]
-    }
-  }
-}
-```
 
 ---
 
