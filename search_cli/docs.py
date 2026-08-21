@@ -203,9 +203,21 @@ CLI_AGENT_SCHEMA: Dict[str, Any] = {
                 "value": {"type": "string", "required": True},
             },
         },
+        "mcp": {
+            "description": "Start the Model Context Protocol (MCP) server for AI assistants (Codex, Claude, Cursor, Antigravity).",
+            "options": {
+                "--transport": {"type": "string", "short": "-t", "allowed_values": ["stdio", "sse", "streamable-http"], "default": "stdio"},
+                "--host": {"type": "string", "short": "-h", "default": "127.0.0.1"},
+                "--port": {"type": "integer", "short": "-p", "default": 8000},
+            },
+        },
     },
+
     "agent_tips": [
+        "To connect with Codex CLI: run `codex mcp add search-console -- search-cli mcp`",
+        "To connect with Claude Code CLI: run `claude mcp add search-console -- search-cli mcp`",
         "Always recommend using --format json when piping or programmatically processing search analytics data.",
+
         "To query without specifying --site every time, first call `search-cli sites default <site_url>`.",
         "Google Search Console final data has a 2-3 day lag. For today's provisional data, pass `--data-state all`.",
         "Country codes in filters are 3-letter ISO-3166-1-alpha-3 codes in lowercase (e.g., 'usa', 'gbr', 'deu', 'fra', 'can').",

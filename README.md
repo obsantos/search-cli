@@ -203,7 +203,7 @@ search-cli sitemaps list
 
 ## Model Context Protocol (MCP) Server
 
-`search-cli` includes a built-in **MCP Server** using the official Model Context Protocol standard (`mcp>=2.0.0`), allowing AI assistants (Claude Desktop, Cursor, Antigravity, VS Code, Zed) to natively query your Google Search Console data.
+`search-cli` includes a built-in **MCP Server** using the official Model Context Protocol standard (`mcp>=2.0.0`), allowing AI assistants (**Codex**, **Claude Code**, **Claude Desktop**, **Cursor**, **Windsurf**, **Antigravity**, **Goose**, **VS Code**) to natively query your Google Search Console data.
 
 ### 1. Exposed MCP Tools
 * `query_search_analytics`: Query clicks, impressions, CTR, average position with dimension breakdown, filters, date ranges, and sorting.
@@ -212,9 +212,58 @@ search-cli sitemaps list
 * `list_sitemaps`: List submitted sitemaps, last download timestamps, and error/warning counts.
 * `get_authentication_status`: Check current authentication status and account details.
 
-### 2. Configure with Claude Desktop
+---
 
-Add `search-cli` to your `claude_desktop_config.json` (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+### 2. Quick Add via CLI Commands
+
+If your AI assistant has a CLI, you can add `search-cli` in a single command:
+
+#### 🤖 Codex CLI
+```bash
+codex mcp add search-console -- search-cli mcp
+```
+
+#### 🟣 Claude Code CLI
+```bash
+# Add to current project:
+claude mcp add search-console -- search-cli mcp
+
+# Or add globally across all projects:
+claude mcp add search-console --scope user -- search-cli mcp
+```
+
+#### 🦢 Goose CLI
+```bash
+goose mcp add search-console search-cli mcp
+```
+
+#### 🐙 GitHub Copilot CLI
+In the interactive CLI prompt:
+```text
+/mcp add search-console search-cli mcp
+```
+
+---
+
+### 3. Add via Configuration Files
+
+#### 🤖 Codex (`~/.codex/config.json` or `.codex/config.json`)
+```json
+{
+  "mcp": {
+    "servers": {
+      "search-console": {
+        "command": "search-cli",
+        "args": ["mcp"]
+      }
+    }
+  }
+}
+```
+
+#### 🟣 Claude Desktop (`claude_desktop_config.json`)
+* **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+* **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -227,10 +276,7 @@ Add `search-cli` to your `claude_desktop_config.json` (`~/Library/Application Su
 }
 ```
 
-### 3. Configure with Cursor / Antigravity / Other AI IDEs
-
-In your MCP settings (or `.cursor/mcp.json` / `settings.json`):
-
+#### ⚡ Cursor (`.cursor/mcp.json` or Settings ➔ Features ➔ MCP)
 ```json
 {
   "mcpServers": {
@@ -241,15 +287,44 @@ In your MCP settings (or `.cursor/mcp.json` / `settings.json`):
   }
 }
 ```
+
+#### 🌊 Windsurf / Cascade (`~/.codeium/windsurf/mcp_config.json`)
+```json
+{
+  "mcpServers": {
+    "search-console": {
+      "command": "search-cli",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+#### 🌌 Antigravity / Gemini CLI / VS Code
+```json
+{
+  "mcpServers": {
+    "search-console": {
+      "command": "search-cli",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+---
 
 ### 4. Run Standalone Server
 ```bash
-# Standard I/O mode (default for IDEs and Claude Desktop):
+# Standard I/O mode (default for IDEs and CLI agents):
 search-cli mcp
+# or
+search-cli --mcp
 
 # Network SSE mode (for remote HTTP agents):
 search-cli mcp --transport sse --host 127.0.0.1 --port 8000
 ```
+
 
 ---
 
