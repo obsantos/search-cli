@@ -95,5 +95,12 @@ fi
 echo ""
 echo "✅ Setup verified!"
 "$DEST_BIN" --version 2>/dev/null || .venv/bin/search-cli --version
+
+echo ""
+echo "🤖 Connect to AI Assistants (Model Context Protocol):"
+echo "   Codex:  codex mcp add search-console -- search-cli mcp"
+echo "   Claude: claude mcp add search-console --scope user -- search-cli mcp"
+
 echo ""
 echo "👉 Run 'search-cli --help' or 'search-cli auth login' to get started."
+

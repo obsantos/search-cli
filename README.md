@@ -272,15 +272,11 @@ In the interactive CLI prompt:
 /mcp add search-console search-cli mcp
 ```
 
-> [!TIP]
-> **Virtual Environment Executable Path & Lifecycle:**  
-> If `search-cli` is installed in a local virtual environment rather than globally, use the full path to the executable (e.g., `/path/to/search-cli/.venv/bin/search-cli`):
-> ```bash
-> claude mcp add search-console --scope user -- /path/to/search-cli/.venv/bin/search-cli mcp
-> ```
-> **No background daemon needed:** You do **not** need to manually start or keep the server running. Your AI client automatically starts and terminates `search-cli mcp` in the background for each session over `stdio`.
+> [!NOTE]
+> **Automatic Lifecycle:** You do **not** need to manually start or keep the MCP server running. Your AI client automatically launches and shuts down `search-cli mcp` in the background for each conversation over standard I/O (`stdio`).
 
 ---
+
 
 
 ### 3. Add via Configuration Files
