@@ -49,12 +49,39 @@ ln -sf "$SCRIPT_DIR/.venv/bin/search-cli" "$TARGET_BIN_DIR/search-cli"
 
 echo "🔗 Symlinked $TARGET_BIN_DIR/search-cli -> $SCRIPT_DIR/.venv/bin/search-cli"
 
-# 5. Check PATH
+# 5. Check if ~/.local/bin is in PATH, and add to shell RC if missing
 if [[ ":$PATH:" != *":$TARGET_BIN_DIR:"* ]]; then
-    echo ""
-    echo "⚠️  Note: $TARGET_BIN_DIR is not in your current PATH."
-    echo "   Add it to your shell configuration (e.g. ~/.zshrc or ~/.bashrc):"
-    echo "   export PATH=\"\$HOME/.local/bin:\$PATH\""
+    # Detect user shell config file
+    SHELL_RC=""
+    if [[ "$SHELL" == *"zsh"* ]]; then
+        SHELL_RC="$HOME/.zshrc"
+    elif [[ "$SHELL" == *"bash"* ]]; then
+        if [[ "$OSTYPE" == "darwin"* && -f "$HOME/.bash_profile" ]]; then
+            SHELL_RC="$HOME/.bash_profile"
+        else
+            SHELL_RC="$HOME/.bashrc"
+        fi
+    elif [ -f "$HOME/.zshrc" ]; then
+        SHELL_RC="$HOME/.zshrc"
+    elif [ -f "$HOME/.bashrc" ]; then
+        SHELL_RC="$HOME/.bashrc"
+    fi
+
+    if [ -n "$SHELL_RC" ]; then
+        # Check if already present in the RC file
+        if ! grep -q '\.local/bin' "$SHELL_RC" 2>/dev/null; then
+            echo "" >> "$SHELL_RC"
+            echo '# Added by search-cli' >> "$SHELL_RC"
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_RC"
+            echo "✨ Added $TARGET_BIN_DIR to PATH in $SHELL_RC"
+            echo "👉 Run 'source $SHELL_RC' or restart your terminal to activate."
+        fi
+    else
+        echo ""
+        echo "⚠️  Note: $TARGET_BIN_DIR is not in your current PATH."
+        echo "   Add it to your shell configuration:"
+        echo "   export PATH=\"\$HOME/.local/bin:\$PATH\""
+    fi
 fi
 
 echo ""
