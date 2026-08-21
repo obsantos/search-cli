@@ -1,8 +1,24 @@
-# search-cli
+<p align="center">
+  <img src="assets/logo.png" alt="search-cli logo" width="160" />
+</p>
 
-A modern, fast command-line interface and **Model Context Protocol (MCP) Server** for querying the **Google Search Console Search Analytics API**, inspecting index status, and enabling AI assistants (**Codex**, **Claude**, **Cursor**, **Windsurf**, **Antigravity**) to analyze search performance.
+<h1 align="center">search-cli</h1>
+
+<p align="center">
+  A modern, fast CLI & <strong>Model Context Protocol (MCP) Server</strong> for querying the <strong>Google Search Console Search Analytics API</strong>, inspecting index status, and enabling AI assistants (<strong>Codex</strong>, <strong>Claude</strong>, <strong>Cursor</strong>, <strong>Windsurf</strong>, <strong>Antigravity</strong>) to analyze search performance.
+</p>
+
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#model-context-protocol-mcp-server">MCP Server</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#authentication-setup">Authentication</a> •
+  <a href="#usage-guide">Usage Guide</a> •
+  <a href="PRIVACY_POLICY.md">Privacy Policy</a>
+</p>
 
 ---
+
 
 ## Features
 
