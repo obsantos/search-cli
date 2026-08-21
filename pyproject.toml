@@ -5,8 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "search-cli"
 version = "0.1.0"
-description = "A powerful CLI for querying Google Search Console Search Analytics API"
+description = "A powerful CLI and Model Context Protocol (MCP) Server for Google Search Console Search Analytics API"
 readme = "README.md"
+
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [

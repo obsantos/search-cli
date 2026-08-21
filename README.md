@@ -1,18 +1,20 @@
 # search-cli
 
-A modern, fast command-line interface for querying the **Google Search Console Search Analytics API** and managing properties.
+A modern, fast command-line interface and **Model Context Protocol (MCP) Server** for querying the **Google Search Console Search Analytics API**, inspecting index status, and enabling AI assistants (**Codex**, **Claude**, **Cursor**, **Windsurf**, **Antigravity**) to analyze search performance.
 
 ---
 
 ## Features
 
+- 🤖 **Built-in Model Context Protocol (MCP) Server**: Native MCP tooling (`search-cli mcp`) for **Codex**, **Claude Code**, **Claude Desktop**, **Cursor**, **Windsurf**, **Antigravity**, **Goose**, and other AI agents.
 - 🔍 **Flexible Search Analytics Queries**: Multi-dimension grouping (`query`, `page`, `country`, `device`, `date`, `searchAppearance`).
 - 🎯 **Expressive Filters**: Filter by dimension using intuitive syntax like `query contains "seo"`, `country == usa`, or regex `query regex ^top`.
 - 🔐 **Dual Auth Support**:
   - **OAuth 2.0 User Flow**: Web browser login for personal/interactive usage with automatic token refresh.
   - **Service Account**: Headless authentication for automated scripts and CI/CD pipelines.
-- 🤖 **Model Context Protocol (MCP) Server**: Built-in official MCP server (`search-cli mcp`) for Claude Desktop, Cursor, Antigravity, and AI agents.
+- 📊 **Multiple Output Formats**: Rich formatted terminal tables, CSV, TSV, and JSON.
 - 🌐 **Property & Sitemap Management**: List verified sites, set a default property, check sitemaps status, and inspect URLs.
+
 
 
 ---
