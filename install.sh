@@ -2,12 +2,12 @@
 set -e
 
 # ==============================================================================
-# search-cli Local Setup & Global Linker Script
+# search-cli Idempotent Setup & Global Linker Script
 # ==============================================================================
 
-echo "🚀 Installing search-cli..."
+echo "🚀 Setting up search-cli..."
 
-# 1. Determine Python command
+# 1. Determine Python command (require Python 3.9+)
 PYTHON_CMD=""
 if command -v python3 >/dev/null 2>&1; then
     PYTHON_CMD="python3"
@@ -18,7 +18,6 @@ else
     exit 1
 fi
 
-# Check Python version (>= 3.9)
 PY_VER=$($PYTHON_CMD -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
 PY_MAJOR=$($PYTHON_CMD -c 'import sys; print(sys.version_info.major)')
 PY_MINOR=$($PYTHON_CMD -c 'import sys; print(sys.version_info.minor)')
@@ -31,27 +30,34 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# 2. Create Virtual Environment if it doesn't exist
-if [ ! -d ".venv" ]; then
+# 2. Virtual Environment (re-use if existing)
+if [ ! -d ".venv" ] || [ ! -f ".venv/bin/pip" ]; then
     echo "📦 Creating virtual environment (.venv)..."
     $PYTHON_CMD -m venv .venv
+else
+    echo "📦 Found existing virtual environment (.venv)."
 fi
 
-# 3. Install in editable mode
-echo "⚡ Installing dependencies and search-cli..."
-.venv/bin/pip install --upgrade pip --quiet
+# 3. Install/Update search-cli in editable mode
+echo "⚡ Verifying dependencies and package..."
 .venv/bin/pip install -e . --quiet
 
-# 4. Symlink binary to ~/.local/bin
+# 4. Global symlink to ~/.local/bin
 TARGET_BIN_DIR="$HOME/.local/bin"
 mkdir -p "$TARGET_BIN_DIR"
-ln -sf "$SCRIPT_DIR/.venv/bin/search-cli" "$TARGET_BIN_DIR/search-cli"
+SOURCE_BIN="$SCRIPT_DIR/.venv/bin/search-cli"
+DEST_BIN="$TARGET_BIN_DIR/search-cli"
 
-echo "🔗 Symlinked $TARGET_BIN_DIR/search-cli -> $SCRIPT_DIR/.venv/bin/search-cli"
+if [ -L "$DEST_BIN" ] && [ "$(readlink "$DEST_BIN")" = "$SOURCE_BIN" ]; then
+    echo "🔗 Symlink already active: $DEST_BIN -> $SOURCE_BIN"
+else
+    ln -sf "$SOURCE_BIN" "$DEST_BIN"
+    echo "🔗 Linked $DEST_BIN -> $SOURCE_BIN"
+fi
 
-# 5. Check if ~/.local/bin is in PATH, and add to shell RC if missing
+# 5. Shell PATH Configuration (strictly idempotent)
 if [[ ":$PATH:" != *":$TARGET_BIN_DIR:"* ]]; then
-    # Detect user shell config file
+    # Detect appropriate shell configuration file
     SHELL_RC=""
     if [[ "$SHELL" == *"zsh"* ]]; then
         SHELL_RC="$HOME/.zshrc"
@@ -65,27 +71,29 @@ if [[ ":$PATH:" != *":$TARGET_BIN_DIR:"* ]]; then
         SHELL_RC="$HOME/.zshrc"
     elif [ -f "$HOME/.bashrc" ]; then
         SHELL_RC="$HOME/.bashrc"
+    else
+        SHELL_RC="$HOME/.profile"
     fi
 
-    if [ -n "$SHELL_RC" ]; then
-        # Check if already present in the RC file
-        if ! grep -q '\.local/bin' "$SHELL_RC" 2>/dev/null; then
-            echo "" >> "$SHELL_RC"
-            echo '# Added by search-cli' >> "$SHELL_RC"
-            echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_RC"
-            echo "✨ Added $TARGET_BIN_DIR to PATH in $SHELL_RC"
-            echo "👉 Run 'source $SHELL_RC' or restart your terminal to activate."
-        fi
+    # Check if ~/.local/bin is already exported in the RC file
+    if [ -f "$SHELL_RC" ] && grep -E '\.local/bin' "$SHELL_RC" >/dev/null 2>&1; then
+        echo "ℹ️  $TARGET_BIN_DIR is already configured in $SHELL_RC (open a new shell or run 'source $SHELL_RC')."
     else
-        echo ""
-        echo "⚠️  Note: $TARGET_BIN_DIR is not in your current PATH."
-        echo "   Add it to your shell configuration:"
-        echo "   export PATH=\"\$HOME/.local/bin:\$PATH\""
+        touch "$SHELL_RC"
+        # Ensure file ends with a newline before appending
+        [ -s "$SHELL_RC" ] && [ -n "$(tail -c1 "$SHELL_RC")" ] && echo "" >> "$SHELL_RC"
+        echo "" >> "$SHELL_RC"
+        echo '# Added by search-cli' >> "$SHELL_RC"
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_RC"
+        echo "✨ Added $TARGET_BIN_DIR to PATH in $SHELL_RC"
+        echo "👉 Run 'source $SHELL_RC' or restart your terminal to activate."
     fi
+else
+    echo "ℹ️  $TARGET_BIN_DIR is already in your active PATH."
 fi
 
 echo ""
-echo "✅ Installation complete!"
-"$TARGET_BIN_DIR/search-cli" --version 2>/dev/null || .venv/bin/search-cli --version
+echo "✅ Setup verified!"
+"$DEST_BIN" --version 2>/dev/null || .venv/bin/search-cli --version
 echo ""
 echo "👉 Run 'search-cli --help' or 'search-cli auth login' to get started."
